@@ -1,4 +1,4 @@
-# Project Chat Smart Contract
+# Project Chat Smart Contract - Solana LATAM Builders Program
 
 A Solana Anchor program that adds decentralized discussion threads, comments, replies, and reactions to external posts.
 
