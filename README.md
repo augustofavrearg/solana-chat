@@ -12,6 +12,8 @@ Un programa Solana Anchor que agrega hilos de discusión descentralizados, comen
 - Includes moderation controls: comment deletion, thread locking, and admin overrides.
 - Supports runtime governance via config updates (`paused`, eligibility mode, limits).
 
+---
+
 - Crea una PDA de hilo de discusión por cada publicación externa.
 - Soporta comentarios de primer nivel y respuestas anidadas.
 - Soporta reacciones por usuario en comentarios usando PDAs determinísticas.
@@ -39,6 +41,8 @@ Las seeds principales de PDA son: `config`, `thread + source_program_id + post_a
 - `add_reaction`: creates a reaction account and increments comment reaction counter.
 - `remove_reaction`: removes caller-owned reaction and decrements counter.
 - `admin_remove_reaction`: allows post author or super admin to remove any reaction.
+
+---
 
 - `initialize_config`: inicializa la configuración global y define el super admin.
 - `update_config`: actualiza estado de pausa, modo de elegibilidad y límites.
@@ -70,6 +74,8 @@ Las salvaguardas en ejecución incluyen modo `paused`, bloqueo por hilo, validac
 - `0`: user must be registered and eligible to comment.
 - `1`: user must be registered.
 - `2`: any user is allowed.
+
+---
 
 `eligibility_mode` controla quién puede comentar/responder:
 - `0`: el usuario debe estar registrado y ser elegible para comentar.
