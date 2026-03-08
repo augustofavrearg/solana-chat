@@ -102,6 +102,258 @@ Custom errors include authorization failures, paused/locked restrictions, metada
 El contrato emite eventos de ciclo de vida para cambios de configuración, creación/bloqueo de hilo, creación/edición/borrado de comentarios y alta/baja de reacciones.
 Los errores personalizados incluyen fallos de autorización, restricciones por pausa/bloqueo, fallos de validación de metadatos, fallos de elegibilidad y chequeos de seguridad aritmética.
 
+## Frontend Integration Guide
+
+Use Anchor TS in your frontend to connect a wallet, instantiate `Program`, derive PDAs, and call instructions.
+
+Minimal setup example:
+```ts
+import * as anchor from "@coral-xyz/anchor";
+import { PublicKey } from "@solana/web3.js";
+// import { ProjectChat } from "./idl/project_chat"; // generated types
+
+const provider = new anchor.AnchorProvider(connection, wallet, {});
+const program = new anchor.Program(idl, provider); // as Program<ProjectChat>
+```
+
+### 1) Create or derive a thread for your post
+
+Derive the thread PDA with seeds: `["thread", sourceProgramId, postAccount]`.
+
+```ts
+const [threadPda] = PublicKey.findProgramAddressSync(
+  [Buffer.from("thread"), sourceProgramId.toBuffer(), postAccount.toBuffer()],
+  program.programId
+);
+```
+
+Call `createThreadForPost(sourceProgramId, postId)` once per post:
+```ts
+await program.methods
+  .createThreadForPost(sourceProgramId, new anchor.BN(postId))
+  .accounts({
+    config: configPda,
+    thread: threadPda,
+    postMeta,
+    postAccount,
+    authority: wallet.publicKey,
+    instructionsSysvar: anchor.web3.SYSVAR_INSTRUCTIONS_PUBKEY,
+    systemProgram: anchor.web3.SystemProgram.programId,
+  })
+  .rpc();
+```
+
+### 2) Create comments and replies
+
+Top-level comment:
+```ts
+await program.methods
+  .createComment(sourceProgramId, body)
+  .accounts({
+    config: configPda,
+    thread: threadPda,
+    comment: commentPda,
+    userMeta,
+    author: wallet.publicKey,
+    instructionsSysvar: anchor.web3.SYSVAR_INSTRUCTIONS_PUBKEY,
+    systemProgram: anchor.web3.SystemProgram.programId,
+  })
+  .rpc();
+```
+
+Reply to an existing comment:
+```ts
+await program.methods
+  .replyComment(sourceProgramId, body)
+  .accounts({
+    config: configPda,
+    thread: threadPda,
+    parentComment,
+    comment: replyPda,
+    userMeta,
+    author: wallet.publicKey,
+    instructionsSysvar: anchor.web3.SYSVAR_INSTRUCTIONS_PUBKEY,
+    systemProgram: anchor.web3.SystemProgram.programId,
+  })
+  .rpc();
+```
+
+### 3) Query comments for a thread
+
+Fetch all comments and filter by `thread` field:
+```ts
+const comments = await program.account.comment.all([
+  {
+    memcmp: {
+      // discriminator(8) + thread starts at offset 8
+      offset: 8,
+      bytes: threadPda.toBase58(),
+    },
+  },
+]);
+```
+
+Sort by `commentId` client-side to render deterministic order.
+
+### 4) Add/remove reactions and query them
+
+Reaction PDA seeds: `["reaction", comment, user, reactionKind]`.
+
+```ts
+await program.methods
+  .addReaction("like", expectedCpiProgram)
+  .accounts({
+    config: configPda,
+    thread: threadPda,
+    comment: commentPda,
+    reaction: reactionPda,
+    user: wallet.publicKey,
+    pinnedCpiProgram: expectedCpiProgram,
+    instructionsSysvar: anchor.web3.SYSVAR_INSTRUCTIONS_PUBKEY,
+    systemProgram: anchor.web3.SystemProgram.programId,
+  })
+  .rpc();
+```
+
+Query reactions for a comment:
+```ts
+const reactions = await program.account.reaction.all([
+  {
+    memcmp: {
+      // discriminator(8) + comment starts at offset 8
+      offset: 8,
+      bytes: commentPda.toBase58(),
+    },
+  },
+]);
+```
+
+---
+
+Usa Anchor TS en tu frontend para conectar wallet, instanciar `Program`, derivar PDAs y ejecutar instrucciones.
+
+Ejemplo mínimo de setup:
+```ts
+import * as anchor from "@coral-xyz/anchor";
+import { PublicKey } from "@solana/web3.js";
+// import { ProjectChat } from "./idl/project_chat"; // tipos generados
+
+const provider = new anchor.AnchorProvider(connection, wallet, {});
+const program = new anchor.Program(idl, provider); // como Program<ProjectChat>
+```
+
+### 1) Crear o derivar un thread para tu post
+
+Deriva la PDA del thread con seeds: `["thread", sourceProgramId, postAccount]`.
+
+```ts
+const [threadPda] = PublicKey.findProgramAddressSync(
+  [Buffer.from("thread"), sourceProgramId.toBuffer(), postAccount.toBuffer()],
+  program.programId
+);
+```
+
+Llamá `createThreadForPost(sourceProgramId, postId)` una vez por post:
+```ts
+await program.methods
+  .createThreadForPost(sourceProgramId, new anchor.BN(postId))
+  .accounts({
+    config: configPda,
+    thread: threadPda,
+    postMeta,
+    postAccount,
+    authority: wallet.publicKey,
+    instructionsSysvar: anchor.web3.SYSVAR_INSTRUCTIONS_PUBKEY,
+    systemProgram: anchor.web3.SystemProgram.programId,
+  })
+  .rpc();
+```
+
+### 2) Crear comentarios y respuestas
+
+Comentario de primer nivel:
+```ts
+await program.methods
+  .createComment(sourceProgramId, body)
+  .accounts({
+    config: configPda,
+    thread: threadPda,
+    comment: commentPda,
+    userMeta,
+    author: wallet.publicKey,
+    instructionsSysvar: anchor.web3.SYSVAR_INSTRUCTIONS_PUBKEY,
+    systemProgram: anchor.web3.SystemProgram.programId,
+  })
+  .rpc();
+```
+
+Respuesta a un comentario existente:
+```ts
+await program.methods
+  .replyComment(sourceProgramId, body)
+  .accounts({
+    config: configPda,
+    thread: threadPda,
+    parentComment,
+    comment: replyPda,
+    userMeta,
+    author: wallet.publicKey,
+    instructionsSysvar: anchor.web3.SYSVAR_INSTRUCTIONS_PUBKEY,
+    systemProgram: anchor.web3.SystemProgram.programId,
+  })
+  .rpc();
+```
+
+### 3) Consultar comentarios de un thread
+
+Traé todos los comentarios y filtrá por el campo `thread`:
+```ts
+const comments = await program.account.comment.all([
+  {
+    memcmp: {
+      // discriminator(8) + thread arranca en offset 8
+      offset: 8,
+      bytes: threadPda.toBase58(),
+    },
+  },
+]);
+```
+
+Ordená por `commentId` del lado cliente para render estable.
+
+### 4) Agregar/quitar reacciones y consultarlas
+
+Seeds de PDA de reacción: `["reaction", comment, user, reactionKind]`.
+
+```ts
+await program.methods
+  .addReaction("like", expectedCpiProgram)
+  .accounts({
+    config: configPda,
+    thread: threadPda,
+    comment: commentPda,
+    reaction: reactionPda,
+    user: wallet.publicKey,
+    pinnedCpiProgram: expectedCpiProgram,
+    instructionsSysvar: anchor.web3.SYSVAR_INSTRUCTIONS_PUBKEY,
+    systemProgram: anchor.web3.SystemProgram.programId,
+  })
+  .rpc();
+```
+
+Consultar reacciones de un comentario:
+```ts
+const reactions = await program.account.reaction.all([
+  {
+    memcmp: {
+      // discriminator(8) + comment arranca en offset 8
+      offset: 8,
+      bytes: commentPda.toBase58(),
+    },
+  },
+]);
+```
+
 ## Local Development
 
 Build and test with Anchor from this folder:
