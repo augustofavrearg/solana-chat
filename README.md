@@ -6,19 +6,15 @@ Un programa Solana Anchor que agrega hilos de discusión descentralizados, comen
 
 ## Prelude
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer facilisis, justo at accumsan tempor, velit risus efficitur odio, vitae malesuada sem nunc non mi. Suspendisse potenti.
+This smart contract was developed as my final project for the WayLearn Solana LATAM Builders Program. Initially, the original idea was to create a smart contract that would allow other program participants to upload their projects to the blockchain, using it as storage space. Both the smart contract and the frontend worked correctly, but I later realized that one of the keys to the success of these programs lies in the community we can build among all the participants. Therefore, a DApp that only displayed information seemed somewhat lacking in purpose. Based on my experience as a Web3 developer for another successful DApp, Liquid Staking, I built this smart contract in parallel to provide a chat system where users can express their ideas and exchange opinions with other users and builders about the projects.
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non urna a est hendrerit faucibus. Duis et sapien sed neque volutpat tristique quis vel arcu.
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur feugiat, eros non dictum finibus, tortor lacus suscipit est, ac imperdiet lacus nisi et augue.
+To generate this smart contract, the use of the Codex extension in my Visual Studio Code was key, but the following skills were also crucial: brainstorming, explaining-code, rust-best-practices, solana-dev, and solana-vulnerability-scanner. They were not only key from the construction stage but also allowed me to enrich the development from other perspectives and allowed me to strengthen many concepts about Rust, Anchor and the Solana blockchain.
 
 ---
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer facilisis, justo at accumsan tempor, velit risus efficitur odio, vitae malesuada sem nunc non mi. Suspendisse potenti.
+Este smart contract fue desarrollado como mi proyecto final de WayLearn Solana LATAM Builders Program. En un comienzo la idea original fue armar un smart contract que permitiera a los demas participantes del programa subir sus proyectos a la blockchain usando esta como espacio de almacenamiento, tanto el smart contract como el frontend funcionaron correctamente, pero luego crei que una de las claves del exito de estos programas esta en la comunidad que podemos generar entre todos los participantes, por ello, una DAPP que solamente mostrase informacion estaba un poco vacia de proposito, basandome en mi experiencia como Web3 developer para otra exitosa Liquid Staking DApp construi este smart contract en paralelo para aportar un sistema de chat en donde los usuarios puedan expresar sus ideas e intercambiar opiniones con otros usuarios y builders acerca de los proyectos. 
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non urna a est hendrerit faucibus. Duis et sapien sed neque volutpat tristique quis vel arcu.
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur feugiat, eros non dictum finibus, tortor lacus suscipit est, ac imperdiet lacus nisi et augue.
+Para generar este smart contract fue clave el uso de la extension de Codex en mi Visual Studio Code pero tambien fueron clave el uso de los siguientes skills: brainstorming, explaining-code, rust-best-practices, solana-dev y sonala-vulnerability-scanner. No solo fueron clave desde la construccion sino que me permitieron enriquecer el desarrollo desde otras perspectivas y me permitieron fortalecer muchos conceptos acerca de Rust, Anchor y la blockchain de Solana.
 
 ## Features
 
