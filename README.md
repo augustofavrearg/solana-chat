@@ -4,6 +4,22 @@ A Solana Anchor program that adds decentralized discussion threads, comments, re
 
 Un programa Solana Anchor que agrega hilos de discusión descentralizados, comentarios, respuestas y reacciones a publicaciones externas.
 
+## Prelude
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer facilisis, justo at accumsan tempor, velit risus efficitur odio, vitae malesuada sem nunc non mi. Suspendisse potenti.
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non urna a est hendrerit faucibus. Duis et sapien sed neque volutpat tristique quis vel arcu.
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur feugiat, eros non dictum finibus, tortor lacus suscipit est, ac imperdiet lacus nisi et augue.
+
+---
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer facilisis, justo at accumsan tempor, velit risus efficitur odio, vitae malesuada sem nunc non mi. Suspendisse potenti.
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non urna a est hendrerit faucibus. Duis et sapien sed neque volutpat tristique quis vel arcu.
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur feugiat, eros non dictum finibus, tortor lacus suscipit est, ac imperdiet lacus nisi et augue.
+
 ## Features
 
 - Creates one discussion thread PDA per external post.
