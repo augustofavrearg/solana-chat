@@ -6,7 +6,7 @@ async function main() {
   const provider = anchor.AnchorProvider.env();
   anchor.setProvider(provider);
 
-  const idlPath = path.join(__dirname, '..', 'target', 'idl', 'project_chat.json');
+  const idlPath = path.join(__dirname, '..', 'target', 'idl', 'project_comments.json');
   const idl = JSON.parse(fs.readFileSync(idlPath, 'utf8'));
   idl.address = '3C9uAwPX6Bbx2CybpPa1pWA7kFh5xsQLCPA4hbvkHDWE';
   const program = new anchor.Program(idl, provider);

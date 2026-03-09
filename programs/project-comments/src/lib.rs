@@ -13,7 +13,7 @@ const DELETE_TOMBSTONE: &str = "[deleted]";
 
 // ===== Program Instructions (`#[program]`) =====
 #[program]
-pub mod project_chat {
+pub mod project_comments {
     use super::*;
 
     pub fn initialize_config(
@@ -63,7 +63,7 @@ pub mod project_chat {
         require_keys_eq!(
             ctx.accounts.admin.key(),
             config.super_admin,
-            ProjectChatError::Unauthorized
+            ProjectCommentsError::Unauthorized
         );
 
         config.paused = paused;
@@ -165,7 +165,7 @@ pub mod project_chat {
         thread.comments_count = thread
             .comments_count
             .checked_add(1)
-            .ok_or(ProjectChatError::MathOverflow)?;
+            .ok_or(ProjectCommentsError::MathOverflow)?;
         thread.updated_at = Clock::get()?.unix_timestamp;
 
         let comment = &mut ctx.accounts.comment;
@@ -235,26 +235,26 @@ pub mod project_chat {
         require_keys_eq!(
             parent.thread,
             thread_key,
-            ProjectChatError::ParentThreadMismatch
+            ProjectCommentsError::ParentThreadMismatch
         );
 
         let next_comment_id = ctx.accounts.thread.comments_count;
         let next_depth = parent
             .depth
             .checked_add(1)
-            .ok_or(ProjectChatError::MathOverflow)?;
+            .ok_or(ProjectCommentsError::MathOverflow)?;
 
         parent.replies_count = parent
             .replies_count
             .checked_add(1)
-            .ok_or(ProjectChatError::MathOverflow)?;
+            .ok_or(ProjectCommentsError::MathOverflow)?;
         parent.updated_at = Clock::get()?.unix_timestamp;
 
         let thread = &mut ctx.accounts.thread;
         thread.comments_count = thread
             .comments_count
             .checked_add(1)
-            .ok_or(ProjectChatError::MathOverflow)?;
+            .ok_or(ProjectCommentsError::MathOverflow)?;
         thread.updated_at = Clock::get()?.unix_timestamp;
 
         let comment = &mut ctx.accounts.comment;
@@ -304,11 +304,11 @@ pub mod project_chat {
         validate_body(&body, usize::from(ctx.accounts.config.max_comment_len))?;
 
         let comment = &mut ctx.accounts.comment;
-        require!(!comment.deleted, ProjectChatError::CommentDeleted);
+        require!(!comment.deleted, ProjectCommentsError::CommentDeleted);
         require_keys_eq!(
             comment.author,
             ctx.accounts.author.key(),
-            ProjectChatError::Unauthorized
+            ProjectCommentsError::Unauthorized
         );
 
         comment.body = body;
@@ -337,7 +337,7 @@ pub mod project_chat {
 
         require!(
             is_author || is_post_author || is_admin,
-            ProjectChatError::Unauthorized
+            ProjectCommentsError::Unauthorized
         );
 
         comment.deleted = true;
@@ -361,7 +361,7 @@ pub mod project_chat {
         let thread = &mut ctx.accounts.thread;
         let is_post_author = thread.post_author == ctx.accounts.actor.key();
         let is_admin = ctx.accounts.config.super_admin == ctx.accounts.actor.key();
-        require!(is_post_author || is_admin, ProjectChatError::Unauthorized);
+        require!(is_post_author || is_admin, ProjectCommentsError::Unauthorized);
 
         thread.is_locked = is_locked;
         thread.updated_at = Clock::get()?.unix_timestamp;
@@ -417,7 +417,7 @@ pub mod project_chat {
         comment.reactions_total = comment
             .reactions_total
             .checked_add(1)
-            .ok_or(ProjectChatError::MathOverflow)?;
+            .ok_or(ProjectCommentsError::MathOverflow)?;
         comment.updated_at = now;
 
         emit!(ReactionAdded {
@@ -439,14 +439,14 @@ pub mod project_chat {
         require_keys_eq!(
             ctx.accounts.reaction.user,
             ctx.accounts.user.key(),
-            ProjectChatError::Unauthorized
+            ProjectCommentsError::Unauthorized
         );
 
         let comment = &mut ctx.accounts.comment;
         comment.reactions_total = comment
             .reactions_total
             .checked_sub(1)
-            .ok_or(ProjectChatError::MathUnderflow)?;
+            .ok_or(ProjectCommentsError::MathUnderflow)?;
         comment.updated_at = Clock::get()?.unix_timestamp;
 
         emit!(ReactionRemoved {
@@ -467,13 +467,13 @@ pub mod project_chat {
         let actor = ctx.accounts.actor.key();
         let is_admin = actor == ctx.accounts.config.super_admin;
         let is_post_author = actor == ctx.accounts.thread.post_author;
-        require!(is_admin || is_post_author, ProjectChatError::Unauthorized);
+        require!(is_admin || is_post_author, ProjectCommentsError::Unauthorized);
 
         let comment = &mut ctx.accounts.comment;
         comment.reactions_total = comment
             .reactions_total
             .checked_sub(1)
-            .ok_or(ProjectChatError::MathUnderflow)?;
+            .ok_or(ProjectCommentsError::MathUnderflow)?;
         comment.updated_at = Clock::get()?.unix_timestamp;
 
         emit!(ReactionRemoved {
@@ -656,7 +656,7 @@ pub struct AddReaction<'info> {
         mut,
         seeds = [b"comment", comment.thread.as_ref(), &comment.comment_id.to_le_bytes()],
         bump = comment.bump,
-        constraint = comment.thread == thread.key() @ ProjectChatError::ParentThreadMismatch
+        constraint = comment.thread == thread.key() @ ProjectCommentsError::ParentThreadMismatch
     )]
     pub comment: Account<'info, Comment>,
     #[account(
@@ -694,7 +694,7 @@ pub struct RemoveReaction<'info> {
         mut,
         seeds = [b"comment", comment.thread.as_ref(), &comment.comment_id.to_le_bytes()],
         bump = comment.bump,
-        constraint = comment.thread == thread.key() @ ProjectChatError::ParentThreadMismatch
+        constraint = comment.thread == thread.key() @ ProjectCommentsError::ParentThreadMismatch
     )]
     pub comment: Account<'info, Comment>,
     #[account(
@@ -707,7 +707,7 @@ pub struct RemoveReaction<'info> {
             reaction.reaction_kind.as_bytes(),
         ],
         bump = reaction.bump,
-        constraint = reaction.comment == comment.key() @ ProjectChatError::ReactionNotFound
+        constraint = reaction.comment == comment.key() @ ProjectCommentsError::ReactionNotFound
     )]
     pub reaction: Account<'info, Reaction>,
     #[account(mut)]
@@ -729,7 +729,7 @@ pub struct AdminRemoveReaction<'info> {
         mut,
         seeds = [b"comment", comment.thread.as_ref(), &comment.comment_id.to_le_bytes()],
         bump = comment.bump,
-        constraint = comment.thread == thread.key() @ ProjectChatError::ParentThreadMismatch
+        constraint = comment.thread == thread.key() @ ProjectCommentsError::ParentThreadMismatch
     )]
     pub comment: Account<'info, Comment>,
     #[account(
@@ -742,7 +742,7 @@ pub struct AdminRemoveReaction<'info> {
             reaction.reaction_kind.as_bytes(),
         ],
         bump = reaction.bump,
-        constraint = reaction.comment == comment.key() @ ProjectChatError::ReactionNotFound
+        constraint = reaction.comment == comment.key() @ ProjectCommentsError::ReactionNotFound
     )]
     pub reaction: Account<'info, Reaction>,
     pub actor: Signer<'info>,
@@ -949,7 +949,7 @@ pub struct ReactionRemoved {
 
 // ===== Errors (`#[error_code]`) =====
 #[error_code]
-pub enum ProjectChatError {
+pub enum ProjectCommentsError {
     #[msg("Unauthorized operation")]
     Unauthorized,
     #[msg("Program is paused for non-admin writes")]
@@ -997,26 +997,26 @@ pub enum ProjectChatError {
 }
 
 fn validate_eligibility_mode(mode: u8) -> Result<()> {
-    require!(mode <= 2, ProjectChatError::InvalidEligibilityMode);
+    require!(mode <= 2, ProjectCommentsError::InvalidEligibilityMode);
     Ok(())
 }
 
 fn validate_max_comment_len(max_comment_len: u16) -> Result<()> {
-    require!(max_comment_len > 0, ProjectChatError::InvalidMaxCommentLen);
+    require!(max_comment_len > 0, ProjectCommentsError::InvalidMaxCommentLen);
     require!(
         usize::from(max_comment_len) <= ABS_MAX_COMMENT_LEN,
-        ProjectChatError::InvalidMaxCommentLen
+        ProjectCommentsError::InvalidMaxCommentLen
     );
     Ok(())
 }
 
 fn validate_body(body: &str, max_comment_len: usize) -> Result<()> {
     if body.is_empty() {
-        return err!(ProjectChatError::BodyEmpty);
+        return err!(ProjectCommentsError::BodyEmpty);
     }
 
     if body.len() > max_comment_len {
-        return err!(ProjectChatError::BodyTooLong);
+        return err!(ProjectCommentsError::BodyTooLong);
     }
 
     Ok(())
@@ -1026,33 +1026,33 @@ fn validate_reaction_kind(kind: &str) -> Result<()> {
     let len = kind.len();
     require!(
         (1..=MAX_REACTION_KIND_LEN).contains(&len),
-        ProjectChatError::InvalidReactionKind
+        ProjectCommentsError::InvalidReactionKind
     );
     Ok(())
 }
 
 fn ensure_thread_writable(thread: &Account<Thread>) -> Result<()> {
-    require!(!thread.is_locked, ProjectChatError::ThreadLocked);
+    require!(!thread.is_locked, ProjectCommentsError::ThreadLocked);
     Ok(())
 }
 
 fn ensure_not_paused_or_admin(config: &Account<Config>, actor: &Pubkey) -> Result<()> {
     if config.paused && *actor != config.super_admin {
-        return err!(ProjectChatError::ProgramPaused);
+        return err!(ProjectCommentsError::ProgramPaused);
     }
     Ok(())
 }
 
 fn ensure_signer(account: &AccountInfo) -> Result<()> {
     if !account.is_signer {
-        return err!(ProjectChatError::MissingRequiredSigner);
+        return err!(ProjectCommentsError::MissingRequiredSigner);
     }
     Ok(())
 }
 
 fn verify_account_owner(account: &UncheckedAccount, expected_owner: &Pubkey) -> Result<()> {
     if account.owner != expected_owner {
-        return err!(ProjectChatError::InvalidAccountOwner);
+        return err!(ProjectCommentsError::InvalidAccountOwner);
     }
     Ok(())
 }
@@ -1076,14 +1076,14 @@ where
         .or_else(|_| {
             if data.len() <= 8 {
                 return Err(anchor_lang::error::Error::from(
-                    ProjectChatError::InvalidSourceMetadata,
+                    ProjectCommentsError::InvalidSourceMetadata,
                 ));
             }
             T::try_from_slice(&data[8..]).map_err(|_| {
-                anchor_lang::error::Error::from(ProjectChatError::InvalidSourceMetadata)
+                anchor_lang::error::Error::from(ProjectCommentsError::InvalidSourceMetadata)
             })
         })
-        .map_err(|_| anchor_lang::error::Error::from(ProjectChatError::InvalidSourceMetadata))?;
+        .map_err(|_| anchor_lang::error::Error::from(ProjectCommentsError::InvalidSourceMetadata))?;
 
     Ok(parsed)
 }
@@ -1097,21 +1097,21 @@ fn validate_post_meta(
     require_keys_eq!(
         post_meta.source_program_id,
         source_program_id,
-        ProjectChatError::InvalidSourceMetadata
+        ProjectCommentsError::InvalidSourceMetadata
     );
     require_keys_eq!(
         post_meta.post_account,
         post_account,
-        ProjectChatError::InvalidSourceMetadata
+        ProjectCommentsError::InvalidSourceMetadata
     );
     require!(
         post_meta.post_id == post_id,
-        ProjectChatError::InvalidSourceMetadata
+        ProjectCommentsError::InvalidSourceMetadata
     );
-    require!(post_meta.is_public, ProjectChatError::InvalidSourceMetadata);
+    require!(post_meta.is_public, ProjectCommentsError::InvalidSourceMetadata);
     require!(
         !post_meta.is_archived,
-        ProjectChatError::InvalidSourceMetadata
+        ProjectCommentsError::InvalidSourceMetadata
     );
     Ok(())
 }
@@ -1125,29 +1125,29 @@ fn validate_user_eligibility(
     require_keys_eq!(
         user_meta.source_program_id,
         source_program_id,
-        ProjectChatError::InvalidSourceMetadata
+        ProjectCommentsError::InvalidSourceMetadata
     );
     require_keys_eq!(
         user_meta.user,
         user,
-        ProjectChatError::InvalidSourceMetadata
+        ProjectCommentsError::InvalidSourceMetadata
     );
 
     let allowed = match eligibility_mode {
         0 => user_meta.is_registered && user_meta.is_eligible_to_comment,
         1 => user_meta.is_registered,
         2 => true,
-        _ => return err!(ProjectChatError::InvalidEligibilityMode),
+        _ => return err!(ProjectCommentsError::InvalidEligibilityMode),
     };
 
-    require!(allowed, ProjectChatError::NotEligibleToComment);
+    require!(allowed, ProjectCommentsError::NotEligibleToComment);
     Ok(())
 }
 
 fn assert_canonical_pda(account_key: &Pubkey, seeds: &[&[u8]], bump: u8) -> Result<()> {
     let (canonical_pda, canonical_bump) = Pubkey::find_program_address(seeds, &crate::ID);
     if *account_key != canonical_pda || bump != canonical_bump {
-        return err!(ProjectChatError::InvalidPda);
+        return err!(ProjectCommentsError::InvalidPda);
     }
     Ok(())
 }
@@ -1157,10 +1157,10 @@ fn verify_pinned_program_id(
     expected_program_id: &Pubkey,
 ) -> Result<()> {
     if account.key() != *expected_program_id {
-        return err!(ProjectChatError::InvalidCpiProgram);
+        return err!(ProjectCommentsError::InvalidCpiProgram);
     }
     if !account.executable {
-        return err!(ProjectChatError::InvalidCpiProgram);
+        return err!(ProjectCommentsError::InvalidCpiProgram);
     }
     Ok(())
 }
@@ -1168,15 +1168,15 @@ fn verify_pinned_program_id(
 fn verify_instructions_sysvar(account: &UncheckedAccount) -> Result<()> {
     let instructions_id = anchor_lang::solana_program::sysvar::instructions::ID;
     if account.key() != instructions_id {
-        return err!(ProjectChatError::InvalidSysvarAccount);
+        return err!(ProjectCommentsError::InvalidSysvarAccount);
     }
 
     let account_info = account.to_account_info();
     let current_index = load_current_index_checked(&account_info)
-        .map_err(|_| error!(ProjectChatError::InvalidInstructionIntrospection))?;
+        .map_err(|_| error!(ProjectCommentsError::InvalidInstructionIntrospection))?;
 
     load_instruction_at_checked(usize::from(current_index), &account_info)
-        .map_err(|_| error!(ProjectChatError::InvalidInstructionIntrospection))?;
+        .map_err(|_| error!(ProjectCommentsError::InvalidInstructionIntrospection))?;
 
     Ok(())
 }

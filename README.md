@@ -6,13 +6,13 @@ Un programa Solana Anchor que agrega hilos de discusión descentralizados, comen
 
 ## Prelude
 
-This smart contract was developed as my final project for the WayLearn Solana LATAM Builders Program. Initially, the idea was to create a smart contract that would allow other program participants to upload their projects to the blockchain, using it as storage space. Both the smart contract and the frontend worked correctly, but I later realized that one of the keys to the success of these programs lies in the community we can build among all the participants. Therefore, I felt that a DApp that only displayed information was somewhat lacking in purpose. So, based on my experience as a Web3 developer for a Liquid Staking DApp, I built this smart contract in parallel to provide a chat system where users can express their ideas and exchange opinions about projects with other users and builders.
+This smart contract was developed as my final project for the WayLearn Solana LATAM Builders Program. Initially, the idea was to create a smart contract that would allow other program participants to upload their projects to the blockchain, using it as storage space. Both the smart contract and the frontend worked correctly, but I later realized that one of the keys to the success of these programs lies in the community we can build among all the participants. Therefore, I felt that a DApp that only displayed information was somewhat lacking in purpose. So, based on my experience as a Web3 developer for a Liquid Staking DApp, I built this smart contract in parallel to provide a comment system where users can express their ideas and exchange opinions about projects with other users and builders.
 
 To create this smart contract, the use of the Codex extension in my Visual Studio Code was crucial, but the following skills were also essential: brainstorming, explaining-code, rust-best-practices, solana-dev, and solana-vulnerability-scanner. They were key from the construction stage, but they were even more important in enriching the development from other perspectives and allowing me to strengthen many concepts about Rust, Anchor, and the Solana blockchain.
 
 ---
 
-Este smart contract fue desarrollado como mi proyecto final de WayLearn Solana LATAM Builders Program. En un comienzo la idea original fue armar un smart contract que permitiera a los demas participantes del programa subir sus proyectos a la blockchain usando esta como espacio de almacenamiento, tanto el smart contract como el frontend funcionaron correctamente, pero luego crei que una de las claves del exito de estos programas esta en la comunidad que podemos generar entre todos los participantes, por ello, crei que una DApp que solamente mostrase informacion estaba un poco vacia de proposito y fue asi que, basado en mi experiencia como Web3 developer de una Liquid Staking DApp, construi este smart contract en paralelo para aportar un sistema de chat en donde los usuarios puedan expresar sus ideas e intercambiar opiniones acerca de los proyectos con otros usuarios y builders.
+Este smart contract fue desarrollado como mi proyecto final de WayLearn Solana LATAM Builders Program. En un comienzo la idea original fue armar un smart contract que permitiera a los demas participantes del programa subir sus proyectos a la blockchain usando esta como espacio de almacenamiento, tanto el smart contract como el frontend funcionaron correctamente, pero luego crei que una de las claves del exito de estos programas esta en la comunidad que podemos generar entre todos los participantes, por ello, crei que una DApp que solamente mostrase informacion estaba un poco vacia de proposito y fue asi que, basado en mi experiencia como Web3 developer de una Liquid Staking DApp, construi este smart contract en paralelo para aportar un sistema de comentarios en donde los usuarios puedan expresar sus ideas e intercambiar opiniones acerca de los proyectos con otros usuarios y builders.
 
 Para generar este smart contract fue clave el uso de la extension de Codex en mi Visual Studio Code pero tambien fueron clave el uso de los siguientes skills: brainstorming, explaining-code, rust-best-practices, solana-dev y sonala-vulnerability-scanner. Fueron clave desde la construccion pero fueron aun mas importantes para enriquecer el desarrollo desde otras perspectivas y permitirme fortalecer muchos conceptos acerca de Rust, Anchor y la blockchain de Solana.
 
@@ -110,10 +110,10 @@ Minimal setup example:
 ```ts
 import * as anchor from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
-// import { ProjectChat } from "./idl/project_chat"; // generated types
+// import { ProjectComments } from "./idl/project_comments"; // generated types
 
 const provider = new anchor.AnchorProvider(connection, wallet, {});
-const program = new anchor.Program(idl, provider); // as Program<ProjectChat>
+const program = new anchor.Program(idl, provider); // as Program<ProjectComments>
 ```
 
 ### 1) Create or derive a thread for your post
@@ -236,10 +236,10 @@ Ejemplo mínimo de setup:
 ```ts
 import * as anchor from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
-// import { ProjectChat } from "./idl/project_chat"; // tipos generados
+// import { ProjectComments } from "./idl/project_comments"; // tipos generados
 
 const provider = new anchor.AnchorProvider(connection, wallet, {});
-const program = new anchor.Program(idl, provider); // como Program<ProjectChat>
+const program = new anchor.Program(idl, provider); // como Program<ProjectComments>
 ```
 
 ### 1) Crear o derivar un thread para tu post

@@ -1,12 +1,12 @@
 [package]
-name = "project-chat"
+name = "project-comments"
 version = "1.0.3"
-description = "Project Chat Anchor program"
+description = "Project Comments Anchor program"
 edition = "2021"
 
 [lib]
 crate-type = ["cdylib", "lib"]
-name = "project_chat"
+name = "project_comments"
 
 [features]
 default = []

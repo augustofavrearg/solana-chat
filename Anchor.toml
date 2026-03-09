@@ -6,10 +6,10 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-project_chat = "3C9uAwPX6Bbx2CybpPa1pWA7kFh5xsQLCPA4hbvkHDWE"
+project_comments = "3C9uAwPX6Bbx2CybpPa1pWA7kFh5xsQLCPA4hbvkHDWE"
 
 [programs.devnet]
-project_chat = "3C9uAwPX6Bbx2CybpPa1pWA7kFh5xsQLCPA4hbvkHDWE"
+project_comments = "3C9uAwPX6Bbx2CybpPa1pWA7kFh5xsQLCPA4hbvkHDWE"
 
 [registry]
 url = "https://api.apr.dev"

@@ -1197,7 +1197,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "project-chat"
+name = "project-comments"
 version = "1.0.3"
 dependencies = [
  "anchor-lang",
